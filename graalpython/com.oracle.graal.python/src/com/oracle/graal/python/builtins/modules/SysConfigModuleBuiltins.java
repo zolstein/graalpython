@@ -63,11 +63,15 @@ import com.oracle.truffle.api.dsl.Specialization;
  */
 @CoreFunctions(defineModule = "_sysconfig")
 public class SysConfigModuleBuiltins extends PythonBuiltins {
-    private static final EconomicMap<String, Object> STATIC_CONFIG_OPTIONS = EconomicMap.create();
+    private static EconomicMap<String, Object> STATIC_CONFIG_OPTIONS = null;
 
     @Override
     public void initialize(PythonCore core) {
-        STATIC_CONFIG_OPTIONS.put("WITH_THREAD", PInt.intValue(core.getLanguage().getEngineOption(PythonOptions.WithThread)));
+        if (STATIC_CONFIG_OPTIONS == null) {
+            EconomicMap<String, Object> staticConfigOptions = EconomicMap.create();
+            staticConfigOptions.put("WITH_THREAD", PInt.intValue(core.getLanguage().getEngineOption(PythonOptions.WithThread)));
+            STATIC_CONFIG_OPTIONS = staticConfigOptions;
+        }
         super.initialize(core);
     }
 
